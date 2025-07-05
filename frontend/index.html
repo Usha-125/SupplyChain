@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Returns Optimizer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 700px;
+      background: white;
+      margin: 0 auto;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #2d3748;
+      margin-bottom: 30px;
+      font-size: 2.2em;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      margin-bottom: 8px;
+      color: #4a5568;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input, select {
+      padding: 12px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background-color: #f8fafc;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      background-color: white;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    button {
+      grid-column: 1 / -1;
+      padding: 15px;
+      margin-top: 30px;
+      font-size: 18px;
+      font-weight: 600;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #result {
+      margin-top: 40px;
+    }
+
+    .result-container {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      padding: 30px;
+      border-radius: 15px;
+      border-left: 5px solid #667eea;
+    }
+
+    .prediction-summary {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .prediction-summary p {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
+    .reasons-list {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .reasons-list li {
+      margin: 10px 0;
+      line-height: 1.6;
+      color: #4a5568;
+    }
+
+    .recommendation {
+      background: linear-gradient(45deg, #48bb78, #38a169);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .recommendation h4 {
+      margin-top: 0;
+      color: white;
+    }
+
+    .error-container {
+      background: #fed7d7;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 5px solid #e53e3e;
+    }
+
+    code {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .container {
+        padding: 20px;
+        margin: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 Smart Returns Optimizer</h1>
+
+    <form id="predictForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="Product_Rating">Product Rating (1.0 - 5.0)</label>
+          <input type="number" name="Product_Rating" step="0.1" min="1" max="5" required />
+        </div>
+
+        <div class="form-group">
+          <label for="Delivery_Time_Days">Delivery Time (Days)</label>
+          <input type="number" name="Delivery_Time_Days" min="1" max="30" required />
+        </div>
+
+        <div class="form-group">
+          <label for="Past_Return_Count">Past Return Count</label>
+          <input type="number" name="Past_Return_Count" min="0" max="20" required />
+        </div>
+
+        <div class="form-group">
+          <label for="Product_Category">Product Category</label>
+          <select name="Product_Category" required>
+            <option value="">Select Category</option>
+            <option value="Laptops">💻 Laptops</option>
+            <option value="Shirts">👔 Shirts</option>
+            <option value="Shoes">👟 Shoes</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="Product_Size">Product Size</label>
+          <select name="Product_Size" required>
+            <option value="">Select Size</option>
+            <option value="S">Small (S)</option>
+            <option value="M">Medium (M)</option>
+            <option value="L">Large (L)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="Customer_Region">Customer Region</label>
+          <select name="Customer_Region" required>
+            <option value="">Select Region</option>
+            <option value="North">🧭 North</option>
+            <option value="South">🌴 South</option>
+            <option value="East">🌅 East</option>
+            <option value="West">🌄 West</option>
+          </select>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="Customer_Age_Group">Customer Age Group</label>
+          <select name="Customer_Age_Group" required>
+            <option value="">Select Age Group</option>
+            <option value="18-25">18-25 years</option>
+            <option value="26-35">26-35 years</option>
+            <option value="36-45">36-45 years</option>
+            <option value="46-60">46-60 years</option>
+          </select>
+        </div>
+
+        <button type="submit">🔮 Predict Return Risk</button>
+      </div>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("predictForm");
+    const resultDiv = document.getElementById("result");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Show loading state
+      resultDiv.innerHTML = `<div class="result-container"><p>🔄 Processing prediction...</p></div>`;
+
+      const formData = new FormData(form);
+
+      // Create the data object matching the expected API format
+      const data = {
+        Product_Category: formData.get("Product_Category"),
+        Product_Size: formData.get("Product_Size"),
+        Customer_Region: formData.get("Customer_Region"),
+        Customer_Age_Group: formData.get("Customer_Age_Group"),
+        Past_Return_Count: parseInt(formData.get("Past_Return_Count")),
+        Product_Rating: parseFloat(formData.get("Product_Rating")),
+        Delivery_Time_Days: parseInt(formData.get("Delivery_Time_Days"))
+      };
+
+      try {
+        // Make both API calls
+        const [predictRes, explainRes] = await Promise.all([
+          fetch("http://127.0.0.1:8000/predict-return", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          }),
+          fetch("http://127.0.0.1:8000/explain-return", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          })
+        ]);
+
+        if (!predictRes.ok || !explainRes.ok) {
+          throw new Error(`API Error: ${predictRes.status} | ${explainRes.status}`);
+        }
+
+        const predictJson = await predictRes.json();
+        const explainJson = await explainRes.json();
+
+        // Display results
+        const probabilityPercent = (predictJson.return_probability * 100).toFixed(1);
+        const riskLevel = predictJson.return_probability > 0.7 ? "High" : 
+                         predictJson.return_probability > 0.4 ? "Medium" : "Low";
+        
+        const riskColor = riskLevel === "High" ? "#e53e3e" : 
+                         riskLevel === "Medium" ? "#dd6b20" : "#38a169";
+
+        resultDiv.innerHTML = `
+          <div class="result-container">
+            <h3>📊 Prediction Result</h3>
+            <div class="prediction-summary">
+              <p><strong>Return Prediction:</strong> <span style="color: ${riskColor}; font-weight: bold;">${predictJson.prediction}</span></p>
+              <p><strong>Return Probability:</strong> ${probabilityPercent}%</p>
+              <p><strong>Risk Level:</strong> <span style="color: ${riskColor};">${riskLevel}</span></p>
+            </div>
+            
+            <h4>🧠 Key Factors Influencing This Prediction:</h4>
+            <ul class="reasons-list">
+              ${explainJson.top_reasons.map(reason => `<li>${reason}</li>`).join("")}
+            </ul>
+            
+            <div class="recommendation">
+              <h4>💡 Recommendation:</h4>
+              <p>${getRecommendation(predictJson.return_probability, riskLevel)}</p>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        console.error("Error:", err);
+        resultDiv.innerHTML = `
+          <div class="error-container">
+            <p style="color: red;">❌ <strong>Error:</strong> ${err.message}</p>
+            <p>Please make sure the backend server is running on port 8000.</p>
+            <p><small>Run: <code>uvicorn main:app --reload</code> in the backend directory</small></p>
+          </div>
+        `;
+      }
+    });
+
+    function getRecommendation(probability, riskLevel) {
+      if (riskLevel === "High") {
+        return "⚠️ High return risk detected. Consider improving product quality, reducing delivery time, or offering additional customer support.";
+      } else if (riskLevel === "Medium") {
+        return "⚡ Moderate return risk. Monitor this customer and consider proactive engagement to ensure satisfaction.";
+      } else {
+        return "✅ Low return risk. This appears to be a satisfied customer with low likelihood of return.";
+      }
+    }
+  </script>
+</body>
+</html>
