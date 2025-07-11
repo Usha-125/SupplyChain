@@ -28,7 +28,6 @@ with open(os.path.join(model_dir, "input_columns.json"), "r") as f:
 def make_prediction(data: dict):
     df = pd.DataFrame([data])
 
-    # One-hot encode
     categorical_mappings = {
         'Product_Category': ['Laptops', 'Shirts', 'Shoes'],
         'Product_Size': ['L', 'M', 'S'],
@@ -72,15 +71,22 @@ def explain_prediction(data: dict):
 
         shap_values = explainer.shap_values(df_encoded)
 
-        # Handle SHAP format
-        if isinstance(shap_values, list) and len(shap_values) == 2:
-            shap_contributions = shap_values[1][0]
-        elif isinstance(shap_values, np.ndarray) and shap_values.ndim == 2:
-            shap_contributions = shap_values[0]
+        # Handle SHAP output format
+        if isinstance(shap_values, list):
+            if len(shap_values) > 1:
+                shap_contributions = shap_values[1][0]
+            else:
+                shap_contributions = shap_values[0][0]
+        elif isinstance(shap_values, np.ndarray):
+            if shap_values.ndim == 3:
+                shap_contributions = shap_values[0][0]
+            elif shap_values.ndim == 2:
+                shap_contributions = shap_values[0]
+            else:
+                raise ValueError("Unsupported SHAP array dimensions")
         else:
             raise ValueError("Unsupported SHAP output format")
 
-        # Get top 3 impactful features
         abs_vals = np.abs(shap_contributions)
         top_indices = np.argsort(abs_vals)[-3:][::-1]
 
@@ -119,3 +125,20 @@ def format_feature_name(feature_name):
         return f"Customer Age: {feature_name.replace('Customer_Age_Group_', '').replace('_', '-')}"
     else:
         return feature_name.replace('_', ' ').title()
+
+# --- Feature Importance Summary Function ---
+def get_feature_importance_summary():
+    importances = model.feature_importances_
+    top_indices = np.argsort(importances)[-5:][::-1]
+    top_features = []
+
+    for idx in top_indices:
+        feature_name = expected_columns[idx]
+        importance = importances[idx]
+        clean_name = format_feature_name(feature_name)
+        top_features.append({
+            "feature": clean_name,
+            "importance": round(float(importance), 4)
+        })
+
+    return top_features

@@ -11,8 +11,9 @@ import os
 
 def load_and_preprocess_data():
     """Load and preprocess the dataset"""
-    # Load the dataset
-    df = pd.read_csv('smart_returns_dataset.csv')
+   
+    csv_path = os.path.join(os.path.dirname(__file__), 'smart_returns_dataset.csv')
+    df = pd.read_csv(csv_path)
     
     print(f"Dataset shape: {df.shape}")
     print(f"Columns: {df.columns.tolist()}")
