@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,8 +14,17 @@
       min-height: 100vh;
     }
 
+    pre {
+      background-color: #2d3748;
+      color: #e2e8f0;
+      padding: 15px;
+      border-radius: 10px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
     .container {
-      max-width: 700px;
+      max-width: 900px;
       background: white;
       margin: 0 auto;
       padding: 40px;
@@ -92,54 +102,17 @@
       box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
     }
 
-    button:active {
-      transform: translateY(0);
-    }
-
-    #result {
-      margin-top: 40px;
-    }
-
-    .result-container {
+    .result-container, .visualization-container, .error-container {
       background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
       padding: 30px;
       border-radius: 15px;
       border-left: 5px solid #667eea;
-    }
-
-    .prediction-summary {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin: 20px 0;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .prediction-summary p {
-      margin: 10px 0;
-      font-size: 16px;
-    }
-
-    .reasons-list {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin: 20px 0;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .reasons-list li {
-      margin: 10px 0;
-      line-height: 1.6;
-      color: #4a5568;
+      margin-top: 40px;
     }
 
     .recommendation {
       background: linear-gradient(45deg, #48bb78, #38a169);
       color: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin-top: 20px;
     }
 
     .recommendation h4 {
@@ -147,26 +120,21 @@
       color: white;
     }
 
-    .error-container {
-      background: #fed7d7;
-      padding: 20px;
-      border-radius: 10px;
-      border-left: 5px solid #e53e3e;
+    .reasons-list li {
+      margin: 10px 0;
+      font-size: 16px;
     }
 
-    code {
-      background: #2d3748;
-      color: #e2e8f0;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-family: 'Courier New', monospace;
+    .error-container {
+      background: #fed7d7;
+      border-left: 5px solid #e53e3e;
     }
 
     @media (max-width: 768px) {
       .form-grid {
         grid-template-columns: 1fr;
       }
-      
+
       .container {
         padding: 20px;
         margin: 10px;
@@ -177,6 +145,16 @@
 <body>
   <div class="container">
     <h1>🎯 Smart Returns Optimizer</h1>
+
+    <div class="result-container" id="login-section">
+      <h3>🔐 Login</h3>
+      <form id="loginForm">
+        <input type="text" name="username" placeholder="Username" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+      <div id="loginMessage"></div>
+    </div>
 
     <form id="predictForm">
       <div class="form-grid">
@@ -242,102 +220,12 @@
     </form>
 
     <div id="result"></div>
+    <div id="additional-info"></div>
+    <div id="visualization"></div>
+    <button onclick="loadLogs()">📜 View Logs</button>
+    <div id="logs-output" class="result-container"></div>
+
+    <script src="app.js"></script>
   </div>
-
-  <script>
-    const form = document.getElementById("predictForm");
-    const resultDiv = document.getElementById("result");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      // Show loading state
-      resultDiv.innerHTML = `<div class="result-container"><p>🔄 Processing prediction...</p></div>`;
-
-      const formData = new FormData(form);
-
-      // Create the data object matching the expected API format
-      const data = {
-        Product_Category: formData.get("Product_Category"),
-        Product_Size: formData.get("Product_Size"),
-        Customer_Region: formData.get("Customer_Region"),
-        Customer_Age_Group: formData.get("Customer_Age_Group"),
-        Past_Return_Count: parseInt(formData.get("Past_Return_Count")),
-        Product_Rating: parseFloat(formData.get("Product_Rating")),
-        Delivery_Time_Days: parseInt(formData.get("Delivery_Time_Days"))
-      };
-
-      try {
-        // Make both API calls
-        const [predictRes, explainRes] = await Promise.all([
-          fetch("http://127.0.0.1:8000/predict-return", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          }),
-          fetch("http://127.0.0.1:8000/explain-return", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-          })
-        ]);
-
-        if (!predictRes.ok || !explainRes.ok) {
-          throw new Error(`API Error: ${predictRes.status} | ${explainRes.status}`);
-        }
-
-        const predictJson = await predictRes.json();
-        const explainJson = await explainRes.json();
-
-        // Display results
-        const probabilityPercent = (predictJson.return_probability * 100).toFixed(1);
-        const riskLevel = predictJson.return_probability > 0.7 ? "High" : 
-                         predictJson.return_probability > 0.4 ? "Medium" : "Low";
-        
-        const riskColor = riskLevel === "High" ? "#e53e3e" : 
-                         riskLevel === "Medium" ? "#dd6b20" : "#38a169";
-
-        resultDiv.innerHTML = `
-          <div class="result-container">
-            <h3>📊 Prediction Result</h3>
-            <div class="prediction-summary">
-              <p><strong>Return Prediction:</strong> <span style="color: ${riskColor}; font-weight: bold;">${predictJson.prediction}</span></p>
-              <p><strong>Return Probability:</strong> ${probabilityPercent}%</p>
-              <p><strong>Risk Level:</strong> <span style="color: ${riskColor};">${riskLevel}</span></p>
-            </div>
-            
-            <h4>🧠 Key Factors Influencing This Prediction:</h4>
-            <ul class="reasons-list">
-              ${explainJson.top_reasons.map(reason => `<li>${reason}</li>`).join("")}
-            </ul>
-            
-            <div class="recommendation">
-              <h4>💡 Recommendation:</h4>
-              <p>${getRecommendation(predictJson.return_probability, riskLevel)}</p>
-            </div>
-          </div>
-        `;
-      } catch (err) {
-        console.error("Error:", err);
-        resultDiv.innerHTML = `
-          <div class="error-container">
-            <p style="color: red;">❌ <strong>Error:</strong> ${err.message}</p>
-            <p>Please make sure the backend server is running on port 8000.</p>
-            <p><small>Run: <code>uvicorn main:app --reload</code> in the backend directory</small></p>
-          </div>
-        `;
-      }
-    });
-
-    function getRecommendation(probability, riskLevel) {
-      if (riskLevel === "High") {
-        return "⚠️ High return risk detected. Consider improving product quality, reducing delivery time, or offering additional customer support.";
-      } else if (riskLevel === "Medium") {
-        return "⚡ Moderate return risk. Monitor this customer and consider proactive engagement to ensure satisfaction.";
-      } else {
-        return "✅ Low return risk. This appears to be a satisfied customer with low likelihood of return.";
-      }
-    }
-  </script>
 </body>
 </html>
