@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Shirts",
+    "discount_percent": 10,
+    "discount_reason": "High return frequency on specific sizes",
+    "alternatives": ["Stretchable Shirts", "Free-size Shirts"]
+  },
+  {
+    "name": "Shoes",
+    "discount_percent": 20,
+    "discount_reason": "Very high returns for size mismatch",
+    "alternatives": ["Adjustable Shoes", "Shoes with free return policy"]
+  },
+  {
+    "name": "Laptops",
+    "discount_percent": 0,
+    "discount_reason": "Low return rate overall",
+    "alternatives": ["Laptops with extended warranty"]
+  }
+]
