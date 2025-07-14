@@ -1,0 +1,42 @@
+2025-07-08 20:54:34,599 | ERROR | Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+2025-07-08 20:58:42,071 | ERROR | Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+2025-07-08 21:01:16,851 | ERROR | Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+2025-07-08 21:02:41,586 | ERROR | Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+2025-07-08 21:51:36,566 | ERROR | Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+2025-07-08 21:52:29,136 | INFO | Started server process [10496]
+2025-07-08 21:52:29,139 | INFO | Waiting for application startup.
+2025-07-08 21:52:29,141 | INFO | Application startup complete.
+2025-07-08 21:58:39,777 | INFO | Shutting down
+2025-07-08 21:58:39,887 | INFO | Waiting for application shutdown.
+2025-07-08 21:58:39,897 | INFO | Application shutdown complete.
+2025-07-08 21:58:39,900 | INFO | Finished server process [10496]
+2025-07-08 21:58:59,923 | INFO | Started server process [13192]
+2025-07-08 21:58:59,963 | INFO | Waiting for application startup.
+2025-07-08 21:58:59,983 | INFO | Application startup complete.
+2025-07-08 22:20:52,424 | INFO | Shutting down
+2025-07-08 22:20:52,530 | INFO | Waiting for application shutdown.
+2025-07-08 22:20:52,557 | INFO | Application shutdown complete.
+2025-07-08 22:20:52,565 | INFO | Finished server process [13192]
+2025-07-08 22:38:19,993 | INFO | Started server process [13528]
+2025-07-08 22:38:19,996 | INFO | Waiting for application startup.
+2025-07-08 22:38:19,999 | INFO | Application startup complete.
